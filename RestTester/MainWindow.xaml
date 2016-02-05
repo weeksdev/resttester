@@ -1,0 +1,37 @@
+﻿<Controls:MetroWindow x:Class="RestTester.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RestTester"
+        xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        mc:Ignorable="d"
+        Title="RestTester" Width="650">
+    <Controls:MetroWindow.RightWindowCommands>
+        <Controls:WindowCommands>
+            <Button Content="Headers" />
+            <Button Content="Credentials" />
+        </Controls:WindowCommands>
+    </Controls:MetroWindow.RightWindowCommands>
+    <Grid>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <DockPanel LastChildFill="True">
+                <StackPanel DockPanel.Dock="Top" Margin="10" Orientation="Horizontal" HorizontalAlignment="Stretch">
+                    <TextBox Width="400" Controls:TextBoxHelper.Watermark="Url" Controls:TextBoxHelper.ClearTextButton="True" Text="{Binding Path=Url, Mode=TwoWay}"></TextBox>
+                    <ComboBox Margin="10,0" Controls:TextBoxHelper.Watermark="Method" ItemsSource="{Binding Path=Methods}" SelectedValue="{Binding Path=Method}"></ComboBox>
+                    <Button Width="75" Style="{StaticResource AccentedSquareButtonStyle}" Command="{Binding Path=RequestCommand}">Request</Button>
+                </StackPanel>
+                <StackPanel DockPanel.Dock="Top" Margin="10" Orientation="Vertical">
+                    <TextBlock>Request</TextBlock>
+                    <TextBox Margin="0,10" Controls:TextBoxHelper.Watermark="Content-Type" Text="{Binding Path=ContentType}"></TextBox>
+                    <TextBox FontFamily="Consolas" Controls:TextBoxHelper.Watermark="Request Body" Text="{Binding Path=Body, Mode=TwoWay}" TextWrapping="Wrap" AcceptsReturn="True" Height="300"></TextBox>
+                </StackPanel>
+                <StackPanel DockPanel.Dock="Top" Margin="10" Orientation="Vertical">
+                    <TextBlock>Response</TextBlock>
+                    <TextBox Margin="0,10" Controls:TextBoxHelper.Watermark="Response Status Code" Text="{Binding Path=StatusCode}"></TextBox>
+                    <TextBox FontFamily="Consolas" Controls:TextBoxHelper.Watermark="Response Body" Text="{Binding Path=Response, Mode=TwoWay}" TextWrapping="Wrap" AcceptsReturn="True" Height="300"></TextBox>
+                </StackPanel>
+            </DockPanel>
+        </ScrollViewer>
+    </Grid>
+</Controls:MetroWindow>

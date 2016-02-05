@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Text;
+using MahApps.Metro;
+using System.Windows;
 
 namespace RestTester.ViewModel
 {
@@ -33,8 +35,20 @@ namespace RestTester.ViewModel
 
         public RelayCommand RequestCommand { get; set; }
 
-        
-        private Dictionary<string,string> _headers = new Dictionary<string, string>()
+        public List<string> HeaderKeys
+        {
+            get
+            {
+                var headerKeys = new List<string>();
+                foreach(var headerKey in Enum.GetNames(typeof(HttpRequestHeader))) {
+                    headerKeys.Add(headerKey);
+                }
+                return headerKeys;
+            }
+        }
+
+
+        private Dictionary<string, string> _headers = new Dictionary<string, string>()
         {
         };
         public Dictionary<string, string> Headers
@@ -46,15 +60,18 @@ namespace RestTester.ViewModel
         public string Body
         {
             get { return _body; }
-            set {
+            set
+            {
                 _body = value;
                 if (ContentType.Contains("json"))
                 {
-                    try {
+                    try
+                    {
                         FormatError = "";
                         var body = Newtonsoft.Json.JsonConvert.DeserializeObject(_body);
                         _body = Newtonsoft.Json.JsonConvert.SerializeObject(body, Newtonsoft.Json.Formatting.Indented);
-                    }catch(Exception ex)
+                    }
+                    catch (Exception ex)
                     {
                         FormatError = ex.Message;
                         _body = value;
@@ -152,11 +169,12 @@ namespace RestTester.ViewModel
             set { _userAgent = value; RaisePropertyChanged("UserAgent"); }
         }
         private Dictionary<string, string> _responseHeaders;
-        public Dictionary<string,string> ResponseHeaders
+        public Dictionary<string, string> ResponseHeaders
         {
             get { return _responseHeaders; }
-            set { _responseHeaders = value;  RaisePropertyChanged("ResponseHeader"); }
+            set { _responseHeaders = value; RaisePropertyChanged("ResponseHeader"); }
         }
+
         public void Request()
         {
 
@@ -198,7 +216,7 @@ namespace RestTester.ViewModel
                     Response = reader.ReadToEnd();
                     StatusCode = ((int)response.StatusCode).ToString() + " (" + response.StatusCode.ToString() + ")";
                     Dictionary<string, string> headers = new Dictionary<string, string>();
-                    for(var i = 0; i < response.Headers.Count; i++)
+                    for (var i = 0; i < response.Headers.Count; i++)
                     {
                         headers.Add(response.Headers.GetKey(i), response.Headers[i]);
                     }
@@ -221,7 +239,7 @@ namespace RestTester.ViewModel
                     ResponseHeaders = headers;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Response = ex.Message;
             }

@@ -22,11 +22,27 @@ namespace RestTester
     public partial class MainWindow : MetroWindow
     {
         ViewModel.MainViewModel vm;
+        ThemeWindow themeWindow = new ThemeWindow();
         public MainWindow()
         {
             vm = new ViewModel.MainViewModel();
             this.DataContext = vm;
             InitializeComponent();
+        }
+        protected override void OnClosed(EventArgs e)
+        {
+            base.OnClosed(e);
+
+            Application.Current.Shutdown();
+        }
+        private void ThemeButton_Click(object sender, RoutedEventArgs e)
+        {
+
+            if (themeWindow != null)
+                themeWindow = null;
+                themeWindow = new ThemeWindow();
+            
+            themeWindow.Show();
         }
     }
 }

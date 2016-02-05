@@ -11,6 +11,7 @@
         <Controls:WindowCommands>
             <Button Content="Headers" />
             <Button Content="Credentials" />
+            <Button Content="Theme" Name="ThemeButton" Click="ThemeButton_Click"/>
         </Controls:WindowCommands>
     </Controls:MetroWindow.RightWindowCommands>
     <Grid>

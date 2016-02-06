@@ -20,8 +20,9 @@ namespace RestTester
     /// </summary>
     public partial class CredentialsWindow : MetroWindow
     {
-        public CredentialsWindow()
+        public CredentialsWindow(ViewModel.MainViewModel vm)
         {
+            this.DataContext = vm;
             InitializeComponent();
         }
     }

@@ -115,10 +115,10 @@ namespace RestTester.ViewModel
             set { _method = value; RaisePropertyChanged("Method"); }
         }
         private bool _useDefaultCredentials = true;
-        public bool UseDefaultCredentaials
+        public bool UseDefaultCredentials
         {
             get { return _useDefaultCredentials; }
-            set { _useDefaultCredentials = value; RaisePropertyChanged("UseDefaultCredentaials"); }
+            set { _useDefaultCredentials = value; RaisePropertyChanged("UseDefaultCredentials"); }
         }
         private bool _setCredentials;
         public bool SetCredentials
@@ -126,6 +126,21 @@ namespace RestTester.ViewModel
             get { return _setCredentials; }
             set { _setCredentials = value; RaisePropertyChanged("SetCredentials"); }
         }
+        private bool useBasicAuthorization;
+
+        public bool UseBasicAuthorization
+        {
+            get { return useBasicAuthorization; }
+            set { useBasicAuthorization = value; RaisePropertyChanged("UseBasicAuthorization"); }
+        }
+        private bool _preAuthenticate;
+
+        public bool PreAuthenticate
+        {
+            get { return _preAuthenticate; }
+            set { _preAuthenticate = value; RaisePropertyChanged("PreAuthenticate"); }
+        }
+
         private string _username;
         public string Username
         {
@@ -186,13 +201,23 @@ namespace RestTester.ViewModel
             request.Method = Method;
             request.ContentType = ContentType;
             request.UserAgent = UserAgent;
-            request.UseDefaultCredentials = UseDefaultCredentaials;
+            request.UseDefaultCredentials = UseDefaultCredentials;
+            request.PreAuthenticate = PreAuthenticate;
+            
             if (SetCredentials)
             {
-                request.Credentials = new NetworkCredential(Username, Password);
-                if (Domain != "" && Domain != null)
+                if (!UseBasicAuthorization)
                 {
-                    ((NetworkCredential)request.Credentials).Domain = Domain;
+                    request.Credentials = new NetworkCredential(Username, Password);
+                    if (Domain != "" && Domain != null)
+                    {
+                        ((NetworkCredential)request.Credentials).Domain = Domain;
+                    }
+                }
+                else
+                {
+                    String encoded = System.Convert.ToBase64String(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes(Username + ":" + Password));
+                    request.Headers.Add("Authorization", "Basic " + encoded);
                 }
             }
 

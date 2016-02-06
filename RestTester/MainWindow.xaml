@@ -6,11 +6,11 @@
         xmlns:local="clr-namespace:RestTester"
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         mc:Ignorable="d"
-        Title="RestTester" Width="650">
+        Title="RestTester" Width="650" GlowBrush="Gray">
     <Controls:MetroWindow.RightWindowCommands>
         <Controls:WindowCommands>
             <Button Content="Headers" />
-            <Button Content="Credentials" />
+            <Button Content="Credentials" Name="CredentialsButton" Click="CredentialsButton_Click"/>
             <Button Content="Theme" Name="ThemeButton" Click="ThemeButton_Click"/>
         </Controls:WindowCommands>
     </Controls:MetroWindow.RightWindowCommands>

@@ -22,7 +22,8 @@ namespace RestTester
     public partial class MainWindow : MetroWindow
     {
         ViewModel.MainViewModel vm;
-        ThemeWindow themeWindow = new ThemeWindow();
+        ThemeWindow themeWindow;
+        CredentialsWindow credWindow;
         public MainWindow()
         {
             vm = new ViewModel.MainViewModel();
@@ -37,12 +38,22 @@ namespace RestTester
         }
         private void ThemeButton_Click(object sender, RoutedEventArgs e)
         {
-
             if (themeWindow != null)
+            {
                 themeWindow = null;
-                themeWindow = new ThemeWindow();
-            
+            }
+            themeWindow = new ThemeWindow();
             themeWindow.Show();
+        }
+
+        private void CredentialsButton_Click(object sender, RoutedEventArgs e)
+        {
+            if(credWindow != null)
+            {
+                credWindow = null;
+            }
+            credWindow = new CredentialsWindow(vm);
+            credWindow.Show();
         }
     }
 }

@@ -5,15 +5,31 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RestTester"
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:RestTester="clr-namespace:RestTester.Behaviors"
         mc:Ignorable="d"
         Title="RestTester" Width="650" GlowBrush="Gray">
+    <Controls:MetroWindow.LeftWindowCommands>
+        <Controls:WindowCommands>
+            <Button Content="File">
+                <i:Interaction.Behaviors>
+                    <RestTester:ContextMenuOnLeftClickBehavior />
+                </i:Interaction.Behaviors>
+                <Button.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Save" Name="SaveButton" Click="SaveButton_Click"></MenuItem>
+                        <MenuItem Header="Open" Name="OpenButton" Click="OpenButton_Click"></MenuItem>
+                        <MenuItem Header="Theme" Name="ThemeButton" Click="ThemeButton_Click"/>
+                        <MenuItem Header="Quit" Name="QuitButton" Click="QuitButton_Click"></MenuItem>
+                    </ContextMenu>
+                </Button.ContextMenu>
+            </Button>
+        </Controls:WindowCommands>
+    </Controls:MetroWindow.LeftWindowCommands>
     <Controls:MetroWindow.RightWindowCommands>
         <Controls:WindowCommands>
-            <Button Content="Save" Name="SaveButton" Click="SaveButton_Click"></Button>
-            <Button Content="Open" Name="OpenButton" Click="OpenButton_Click"></Button>
             <Button Content="Headers" Name="HeadersButton" Click="HeadersButton_Click"/>
             <Button Content="Credentials" Name="CredentialsButton" Click="CredentialsButton_Click"/>
-            <Button Content="Theme" Name="ThemeButton" Click="ThemeButton_Click"/>
         </Controls:WindowCommands>
     </Controls:MetroWindow.RightWindowCommands>
     <Grid>
@@ -30,8 +46,9 @@
                 </StackPanel>
                 <StackPanel DockPanel.Dock="Top" Margin="10" Orientation="Vertical">
                     <TextBlock>Request</TextBlock>
-                    <TextBox Margin="0,10" Controls:TextBoxHelper.Watermark="Content-Type" Text="{Binding Path=ContentType}"></TextBox>
-                    <TextBox FontFamily="Consolas" Controls:TextBoxHelper.Watermark="Request Body" Text="{Binding Path=Body, Mode=TwoWay}" TextWrapping="Wrap" AcceptsReturn="True" Height="300"></TextBox>
+                    <ComboBox Margin="0,10" Controls:TextBoxHelper.Watermark="Content-Type" Text="{Binding Path=ContentType}" ItemsSource="{Binding Path=ContentTypes}" IsEditable="True"></ComboBox>
+                    <ComboBox Margin="0,10" Controls:TextBoxHelper.Watermark="User-Agent" ItemsSource="{Binding Path=UserAgents}" Text="{Binding Path=UserAgent, Mode=TwoWay}" IsEditable="True"></ComboBox>
+                    <TextBox FontFamily="Consolas" Controls:TextBoxHelper.Watermark="Request Body" Text="{Binding Path=Body, Mode=TwoWay}" TextWrapping="Wrap" AcceptsReturn="True" Height="275"></TextBox>
                 </StackPanel>
                 <StackPanel DockPanel.Dock="Top" Margin="10" Orientation="Vertical">
                     <TextBlock>Response</TextBlock>

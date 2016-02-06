@@ -7,6 +7,8 @@ using System.Linq;
 using System.IO;
 using System.Text;
 using Newtonsoft.Json;
+using System.Security;
+using System.Runtime.InteropServices;
 
 namespace RestTester.ViewModel
 {
@@ -145,13 +147,13 @@ namespace RestTester.ViewModel
             get { return _useDefaultCredentials; }
             set { _useDefaultCredentials = value; RaisePropertyChanged("UseDefaultCredentials"); }
         }
-        private bool _setCredentials;
-        [JsonProperty]
-        public bool SetCredentials
-        {
-            get { return _setCredentials; }
-            set { _setCredentials = value; RaisePropertyChanged("SetCredentials"); }
-        }
+        //private bool _setCredentials;
+        //[JsonProperty]
+        //public bool SetCredentials
+        //{
+        //    get { return _setCredentials; }
+        //    set { _setCredentials = value; RaisePropertyChanged("SetCredentials"); }
+        //}
         private bool useBasicAuthorization;
         [JsonProperty]
         public bool UseBasicAuthorization
@@ -174,9 +176,9 @@ namespace RestTester.ViewModel
             get { return _username; }
             set { _username = value; RaisePropertyChanged("Username"); }
         }
-        private string _password;
+        private SecureString _password;
         [JsonProperty]
-        public string Password
+        public SecureString Password
         {
             get { return _password; }
             set { _password = value; RaisePropertyChanged("Password"); }
@@ -209,6 +211,29 @@ namespace RestTester.ViewModel
             get { return _contentType; }
             set { _contentType = value; RaisePropertyChanged("ContentType"); }
         }
+
+        private System.Collections.ObjectModel.ObservableCollection<string> _contentTypes = new System.Collections.ObjectModel.ObservableCollection<string>()
+        {
+            "application/json",
+            "application/x-javascript",
+            "text/javascript",
+            "text/x-javascript",
+            "text/x-json",
+            "text/xml",
+            "application/xml",
+            "text/plain",
+            "application/soap+xml; charset=utf-8",
+            "application/x-www-form-urlencoded",
+            "multipart/form-data"
+        };
+
+        public System.Collections.ObjectModel.ObservableCollection<string> ContentTypes
+        {
+            get { return _contentTypes; }
+            set { _contentTypes = value; RaisePropertyChanged("ContentTypes"); }
+        }
+
+
         private string _userAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.111 Safari/537.36";
         [JsonProperty]
         public string UserAgent
@@ -216,6 +241,24 @@ namespace RestTester.ViewModel
             get { return _userAgent; }
             set { _userAgent = value; RaisePropertyChanged("UserAgent"); }
         }
+
+        private System.Collections.ObjectModel.ObservableCollection<string> _userAgents = new System.Collections.ObjectModel.ObservableCollection<string>()
+        {
+            "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.111 Safari/537.36",
+            "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36",
+            "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1",
+            "Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; AS; rv:11.0) like Gecko",
+            "Mozilla/5.0 (Linux; U; Android 4.0.3; ko-kr; LG-L160L Build/IML74K) AppleWebkit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.75.14 (KHTML, like Gecko) Version/7.0.3 Safari/7046A194A",
+            "Mozilla/5.0 (compatible; MSIE 9.0; Windows Phone OS 7.5; Trident/5.0; IEMobile/9.0)"
+        };
+
+        public System.Collections.ObjectModel.ObservableCollection<string> UserAgents
+        {
+            get { return _userAgents; }
+            set { _userAgents = value; RaisePropertyChanged("UserAgents"); }
+        }
+
 
         private Dictionary<string, string> _responseHeaders;
         [JsonProperty]
@@ -243,17 +286,14 @@ namespace RestTester.ViewModel
                 try
                 {
                     HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(new Uri(Url));
-                    foreach (var header in Headers)
-                    {
-                        request.Headers.Add(header.Key, header.Value);
-                    }
+                    
                     request.Method = Method;
                     request.ContentType = ContentType;
                     request.UserAgent = UserAgent;
                     request.UseDefaultCredentials = UseDefaultCredentials;
                     request.PreAuthenticate = PreAuthenticate;
 
-                    if (SetCredentials)
+                    if (!UseDefaultCredentials)
                     {
                         if (!UseBasicAuthorization)
                         {
@@ -265,7 +305,7 @@ namespace RestTester.ViewModel
                         }
                         else
                         {
-                            String encoded = System.Convert.ToBase64String(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes(Username + ":" + Password));
+                            String encoded = System.Convert.ToBase64String(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes(Username + ":" + SecureStringToString(Password)));
                             request.Headers.Add("Authorization", "Basic " + encoded);
                         }
                     }
@@ -333,7 +373,19 @@ namespace RestTester.ViewModel
             });
             requestThread.Start();
         }
-
+        String SecureStringToString(SecureString value)
+        {
+            IntPtr valuePtr = IntPtr.Zero;
+            try
+            {
+                valuePtr = Marshal.SecureStringToGlobalAllocUnicode(value);
+                return Marshal.PtrToStringUni(valuePtr);
+            }
+            finally
+            {
+                Marshal.ZeroFreeGlobalAllocUnicode(valuePtr);
+            }
+        }
         private string _filePath;
         public string FilePath
         {

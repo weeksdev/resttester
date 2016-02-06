@@ -1,24 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using MahApps.Metro.Controls;
 
 namespace RestTester
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
-    /// </summary>
+    /// </summary> 
     public partial class MainWindow : MetroWindow
     {
         ViewModel.MainViewModel vm;
@@ -65,6 +53,32 @@ namespace RestTester
             }
             headersWindow = new HeadersWindow(vm);
             headersWindow.Show();
+        }
+
+        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.SaveFileDialog dlg = new System.Windows.Forms.SaveFileDialog();
+            dlg.Filter = "rest|*.rest";
+            dlg.FileName = "request.rest";
+            var result = dlg.ShowDialog();
+            if (result == System.Windows.Forms.DialogResult.OK)
+            {
+                var filename = dlg.FileName;
+                vm.FilePath = filename;
+                vm.Save();
+            }
+        }
+
+        private void OpenButton_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.OpenFileDialog dlg = new System.Windows.Forms.OpenFileDialog();
+            dlg.Filter = "rest|*.rest";
+            var result = dlg.ShowDialog();
+            if(result == System.Windows.Forms.DialogResult.OK)
+            {
+                vm.FilePath = dlg.FileName;
+                vm.Open();
+            }
         }
     }
 }

@@ -6,8 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Text;
-using MahApps.Metro;
-using System.Windows;
+using Newtonsoft.Json;
 
 namespace RestTester.ViewModel
 {
@@ -23,6 +22,7 @@ namespace RestTester.ViewModel
     /// See http://www.galasoft.ch/mvvm
     /// </para>
     /// </summary>
+    [JsonObject(MemberSerialization.OptIn)]
     public class MainViewModel : ViewModelBase
     {
         /// <summary>
@@ -32,16 +32,19 @@ namespace RestTester.ViewModel
         {
             RequestCommand = new RelayCommand(Request);
             AddNewHeaderCommand = new RelayCommand(AddNewHeader);
+
         }
 
         public RelayCommand RequestCommand { get; set; }
+        public RelayCommand SaveCommand { get; set; }
 
         public List<string> HeaderKeys
         {
             get
             {
                 var headerKeys = new List<string>();
-                foreach(var headerKey in Enum.GetNames(typeof(HttpRequestHeader))) {
+                foreach (var headerKey in Enum.GetNames(typeof(HttpRequestHeader)))
+                {
                     headerKeys.Add(headerKey);
                 }
                 return headerKeys;
@@ -61,6 +64,7 @@ namespace RestTester.ViewModel
         private System.Collections.ObjectModel.ObservableCollection<KeyVal> _headers = new System.Collections.ObjectModel.ObservableCollection<KeyVal>()
         {
         };
+        [JsonProperty]
         public System.Collections.ObjectModel.ObservableCollection<KeyVal> Headers
         {
             get { return _headers; }
@@ -73,6 +77,7 @@ namespace RestTester.ViewModel
             RaisePropertyChanged("Headers");
         }
         private string _body = "";
+        [JsonProperty]
         public string Body
         {
             get { return _body; }
@@ -97,6 +102,7 @@ namespace RestTester.ViewModel
             }
         }
         private string _formatError;
+        [JsonProperty]
         public string FormatError
         {
             get { return _formatError; }
@@ -104,6 +110,7 @@ namespace RestTester.ViewModel
         }
 
         private string _url = "http://localhost";
+        [JsonProperty]
         public string Url
         {
             get { return _url; }
@@ -117,7 +124,7 @@ namespace RestTester.ViewModel
             "DELETE",
             "OPTIONS"
         };
-
+        [JsonProperty]
         public List<string> Methods
         {
             get { return _methods; }
@@ -125,32 +132,35 @@ namespace RestTester.ViewModel
         }
 
         private string _method = "GET";
+        [JsonProperty]
         public string Method
         {
             get { return _method; }
             set { _method = value; RaisePropertyChanged("Method"); }
         }
         private bool _useDefaultCredentials = true;
+        [JsonProperty]
         public bool UseDefaultCredentials
         {
             get { return _useDefaultCredentials; }
             set { _useDefaultCredentials = value; RaisePropertyChanged("UseDefaultCredentials"); }
         }
         private bool _setCredentials;
+        [JsonProperty]
         public bool SetCredentials
         {
             get { return _setCredentials; }
             set { _setCredentials = value; RaisePropertyChanged("SetCredentials"); }
         }
         private bool useBasicAuthorization;
-
+        [JsonProperty]
         public bool UseBasicAuthorization
         {
             get { return useBasicAuthorization; }
             set { useBasicAuthorization = value; RaisePropertyChanged("UseBasicAuthorization"); }
         }
         private bool _preAuthenticate;
-
+        [JsonProperty]
         public bool PreAuthenticate
         {
             get { return _preAuthenticate; }
@@ -158,50 +168,58 @@ namespace RestTester.ViewModel
         }
 
         private string _username;
+        [JsonProperty]
         public string Username
         {
             get { return _username; }
             set { _username = value; RaisePropertyChanged("Username"); }
         }
         private string _password;
+        [JsonProperty]
         public string Password
         {
             get { return _password; }
             set { _password = value; RaisePropertyChanged("Password"); }
         }
         private string _domain;
+        [JsonProperty]
         public string Domain
         {
             get { return _domain; }
             set { _domain = value; RaisePropertyChanged("Domain"); }
         }
         private string _response = "";
+        [JsonProperty]
         public string Response
         {
             get { return _response; }
             set { _response = value; RaisePropertyChanged("Response"); }
         }
         private string _statusCode;
+        [JsonProperty]
         public string StatusCode
         {
             get { return _statusCode; }
             set { _statusCode = value; RaisePropertyChanged("StatusCode"); }
         }
         private string _contentType = "application/json";
+        [JsonProperty]
         public string ContentType
         {
             get { return _contentType; }
             set { _contentType = value; RaisePropertyChanged("ContentType"); }
         }
         private string _userAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.111 Safari/537.36";
+        [JsonProperty]
         public string UserAgent
         {
             get { return _userAgent; }
             set { _userAgent = value; RaisePropertyChanged("UserAgent"); }
         }
-        
+
         private Dictionary<string, string> _responseHeaders;
-        public Dictionary<string,string> ResponseHeaders
+        [JsonProperty]
+        public Dictionary<string, string> ResponseHeaders
         {
             get { return _responseHeaders; }
             set { _responseHeaders = value; RaisePropertyChanged("ResponseHeader"); }
@@ -214,8 +232,8 @@ namespace RestTester.ViewModel
             get { return _isLoading; }
             set { _isLoading = value; RaisePropertyChanged("IsLoading"); }
         }
-        
-        private void Request()
+
+        public void Request()
         {
             IsLoading = true;
             Response = "";
@@ -252,7 +270,7 @@ namespace RestTester.ViewModel
                         }
                     }
 
-                    if(Headers.Distinct().Count() > 0)
+                    if (Headers.Distinct().Count() > 0)
                     {
                         Headers.Distinct().ToList().ForEach(a => request.Headers.Add(a.Key, a.Value));
                     }
@@ -314,6 +332,49 @@ namespace RestTester.ViewModel
                 }
             });
             requestThread.Start();
+        }
+
+        private string _filePath;
+        public string FilePath
+        {
+            get { return _filePath; }
+            set { _filePath = value; RaisePropertyChanged("FilePath"); }
+        }
+
+        public void Save()
+        {
+            try
+            {
+                var requestData = Newtonsoft.Json.JsonConvert.SerializeObject(this);
+                System.IO.File.WriteAllText(FilePath, requestData);
+            }
+            catch { }
+        }
+
+        public void Open()
+        {
+            try
+            {
+                var requestData = System.IO.File.ReadAllText(FilePath);
+                var previousModel = Newtonsoft.Json.JsonConvert.DeserializeObject<ViewModel.MainViewModel>(requestData);
+                foreach (var property in previousModel.GetType().GetProperties())
+                {
+                    //Check if the property is one that we've serialized
+                    if (Attribute.IsDefined(property, typeof(JsonPropertyAttribute)))
+                    {
+                        var oldValue = previousModel.GetType().GetProperty(property.Name).GetValue(previousModel);
+                        if (oldValue != null && oldValue.ToString() != "null")
+                        {
+                            this.GetType().GetProperty(property.Name).SetValue(this, oldValue);
+                        }
+                        else
+                        {
+                            this.GetType().GetProperty(property.Name).SetValue(this, null);
+                        }
+                    }
+                }
+            }
+            catch { }
         }
     }
 }

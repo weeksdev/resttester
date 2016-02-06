@@ -9,6 +9,8 @@
         Title="RestTester" Width="650" GlowBrush="Gray">
     <Controls:MetroWindow.RightWindowCommands>
         <Controls:WindowCommands>
+            <Button Content="Save" Name="SaveButton" Click="SaveButton_Click"></Button>
+            <Button Content="Open" Name="OpenButton" Click="OpenButton_Click"></Button>
             <Button Content="Headers" Name="HeadersButton" Click="HeadersButton_Click"/>
             <Button Content="Credentials" Name="CredentialsButton" Click="CredentialsButton_Click"/>
             <Button Content="Theme" Name="ThemeButton" Click="ThemeButton_Click"/>

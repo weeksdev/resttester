@@ -31,6 +31,7 @@ namespace RestTester.ViewModel
         public MainViewModel()
         {
             RequestCommand = new RelayCommand(Request);
+            AddNewHeaderCommand = new RelayCommand(AddNewHeader);
         }
 
         public RelayCommand RequestCommand { get; set; }
@@ -47,14 +48,29 @@ namespace RestTester.ViewModel
             }
         }
 
-
-        private Dictionary<string, string> _headers = new Dictionary<string, string>()
+        public class KeyVal
+        {
+            public string Key { get; set; }
+            public string Value { get; set; }
+            public KeyVal(string key, string value)
+            {
+                Key = key;
+                Value = value;
+            }
+        }
+        private System.Collections.ObjectModel.ObservableCollection<KeyVal> _headers = new System.Collections.ObjectModel.ObservableCollection<KeyVal>()
         {
         };
-        public Dictionary<string, string> Headers
+        public System.Collections.ObjectModel.ObservableCollection<KeyVal> Headers
         {
             get { return _headers; }
             set { _headers = value; RaisePropertyChanged("Headers"); }
+        }
+        public RelayCommand AddNewHeaderCommand { get; set; }
+        public void AddNewHeader()
+        {
+            Headers.Add(new KeyVal("Header-Key", "Header-Value"));
+            RaisePropertyChanged("Headers");
         }
         private string _body = "";
         public string Body
@@ -183,91 +199,121 @@ namespace RestTester.ViewModel
             get { return _userAgent; }
             set { _userAgent = value; RaisePropertyChanged("UserAgent"); }
         }
+        
         private Dictionary<string, string> _responseHeaders;
-        public Dictionary<string, string> ResponseHeaders
+        public Dictionary<string,string> ResponseHeaders
         {
             get { return _responseHeaders; }
             set { _responseHeaders = value; RaisePropertyChanged("ResponseHeader"); }
         }
 
-        public void Request()
+        private bool _isLoading;
+
+        public bool IsLoading
         {
-
-            HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(new Uri(Url));
-            foreach (var header in Headers)
+            get { return _isLoading; }
+            set { _isLoading = value; RaisePropertyChanged("IsLoading"); }
+        }
+        
+        private void Request()
+        {
+            IsLoading = true;
+            Response = "";
+            StatusCode = "";
+            System.Threading.Thread requestThread = new System.Threading.Thread(delegate ()
             {
-                request.Headers.Add(header.Key, header.Value);
-            }
-            request.Method = Method;
-            request.ContentType = ContentType;
-            request.UserAgent = UserAgent;
-            request.UseDefaultCredentials = UseDefaultCredentials;
-            request.PreAuthenticate = PreAuthenticate;
-            
-            if (SetCredentials)
-            {
-                if (!UseBasicAuthorization)
+                try
                 {
-                    request.Credentials = new NetworkCredential(Username, Password);
-                    if (Domain != "" && Domain != null)
+                    HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(new Uri(Url));
+                    foreach (var header in Headers)
                     {
-                        ((NetworkCredential)request.Credentials).Domain = Domain;
+                        request.Headers.Add(header.Key, header.Value);
                     }
-                }
-                else
-                {
-                    String encoded = System.Convert.ToBase64String(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes(Username + ":" + Password));
-                    request.Headers.Add("Authorization", "Basic " + encoded);
-                }
-            }
+                    request.Method = Method;
+                    request.ContentType = ContentType;
+                    request.UserAgent = UserAgent;
+                    request.UseDefaultCredentials = UseDefaultCredentials;
+                    request.PreAuthenticate = PreAuthenticate;
 
-            if (Body != "" && Body != null && Method != "GET")
-            {
-                byte[] byteArray = Encoding.UTF8.GetBytes(Body);
-                request.ContentLength = byteArray.Length;
-                Stream dataStream = request.GetRequestStream();
-                dataStream.Write(byteArray, 0, byteArray.Length);
-                dataStream.Close();
-
-
-            }
-
-            try
-            {
-                using (var response = (HttpWebResponse)request.GetResponse())
-                using (var stream = response.GetResponseStream())
-                using (var reader = new StreamReader(stream))
-                {
-                    Response = reader.ReadToEnd();
-                    StatusCode = ((int)response.StatusCode).ToString() + " (" + response.StatusCode.ToString() + ")";
-                    Dictionary<string, string> headers = new Dictionary<string, string>();
-                    for (var i = 0; i < response.Headers.Count; i++)
+                    if (SetCredentials)
                     {
-                        headers.Add(response.Headers.GetKey(i), response.Headers[i]);
+                        if (!UseBasicAuthorization)
+                        {
+                            request.Credentials = new NetworkCredential(Username, Password);
+                            if (Domain != "" && Domain != null)
+                            {
+                                ((NetworkCredential)request.Credentials).Domain = Domain;
+                            }
+                        }
+                        else
+                        {
+                            String encoded = System.Convert.ToBase64String(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes(Username + ":" + Password));
+                            request.Headers.Add("Authorization", "Basic " + encoded);
+                        }
                     }
-                    ResponseHeaders = headers;
-                }
-            }
-            catch (WebException ex)
-            {
-                using (var response = (HttpWebResponse)ex.Response)
-                using (var stream = response.GetResponseStream())
-                using (var reader = new StreamReader(stream))
-                {
-                    Response = reader.ReadToEnd();
-                    StatusCode = ((int)response.StatusCode).ToString() + " (" + response.StatusCode.ToString() + ")";
-                    Dictionary<string, string> headers = new Dictionary<string, string>();
-                    for (var i = 0; i < response.Headers.Count; i++)
+
+                    if(Headers.Distinct().Count() > 0)
                     {
-                        headers.Add(response.Headers.GetKey(i), response.Headers[i]);
+                        Headers.Distinct().ToList().ForEach(a => request.Headers.Add(a.Key, a.Value));
                     }
-                    ResponseHeaders = headers;
+
+                    if (Body != "" && Body != null && Method != "GET")
+                    {
+                        byte[] byteArray = Encoding.UTF8.GetBytes(Body);
+                        request.ContentLength = byteArray.Length;
+                        Stream dataStream = request.GetRequestStream();
+                        dataStream.Write(byteArray, 0, byteArray.Length);
+                        dataStream.Close();
+                    }
+
+                    try
+                    {
+                        using (var response = (HttpWebResponse)request.GetResponse())
+                        using (var stream = response.GetResponseStream())
+                        using (var reader = new StreamReader(stream))
+                        {
+                            Response = reader.ReadToEnd();
+                            StatusCode = ((int)response.StatusCode).ToString() + " (" + response.StatusCode.ToString() + ")";
+                            Dictionary<string, string> headers = new Dictionary<string, string>();
+                            for (var i = 0; i < response.Headers.Count; i++)
+                            {
+                                headers.Add(response.Headers.GetKey(i), response.Headers[i]);
+                            }
+                            ResponseHeaders = headers;
+                        }
+                    }
+                    catch (WebException ex)
+                    {
+                        using (var response = (HttpWebResponse)ex.Response)
+                        using (var stream = response.GetResponseStream())
+                        using (var reader = new StreamReader(stream))
+                        {
+                            Response = reader.ReadToEnd();
+                            StatusCode = ((int)response.StatusCode).ToString() + " (" + response.StatusCode.ToString() + ")";
+                            Dictionary<string, string> headers = new Dictionary<string, string>();
+                            for (var i = 0; i < response.Headers.Count; i++)
+                            {
+                                headers.Add(response.Headers.GetKey(i), response.Headers[i]);
+                            }
+                            ResponseHeaders = headers;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Response = ex.Message;
+                    }
+
                 }
-            }
-            catch (Exception ex)
-            {
-                Response = ex.Message;
-            }
+                catch (Exception ex)
+                {
+                    Response = "Sorry an unknown error occured in requesting. \r\n" + ex.Message;
+                }
+                finally
+                {
+                    IsLoading = false;
+                }
+            });
+            requestThread.Start();
         }
     }
 }

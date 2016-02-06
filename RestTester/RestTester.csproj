@@ -102,6 +102,9 @@
     <Compile Include="CredentialsWindow.xaml.cs">
       <DependentUpon>CredentialsWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="HeadersWindow.xaml.cs">
+      <DependentUpon>HeadersWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ThemeWindow.xaml.cs">
       <DependentUpon>ThemeWindow.xaml</DependentUpon>
     </Compile>
@@ -110,6 +113,10 @@
     <Compile Include="viewmodel\ThemeViewModel.cs" />
     <Compile Include="viewmodel\ViewModelLocator.cs" />
     <Page Include="CredentialsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="HeadersWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

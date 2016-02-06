@@ -9,18 +9,22 @@
         Title="RestTester" Width="650" GlowBrush="Gray">
     <Controls:MetroWindow.RightWindowCommands>
         <Controls:WindowCommands>
-            <Button Content="Headers" />
+            <Button Content="Headers" Name="HeadersButton" Click="HeadersButton_Click"/>
             <Button Content="Credentials" Name="CredentialsButton" Click="CredentialsButton_Click"/>
             <Button Content="Theme" Name="ThemeButton" Click="ThemeButton_Click"/>
         </Controls:WindowCommands>
     </Controls:MetroWindow.RightWindowCommands>
     <Grid>
+        <Grid.Resources>
+            <BooleanToVisibilityConverter x:Key="visibilityConverter" />
+        </Grid.Resources>
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <DockPanel LastChildFill="True">
-                <StackPanel DockPanel.Dock="Top" Margin="10" Orientation="Horizontal" HorizontalAlignment="Stretch">
+                <StackPanel DockPanel.Dock="Top" Margin="10" Orientation="Horizontal" >
                     <TextBox Width="400" Controls:TextBoxHelper.Watermark="Url" Controls:TextBoxHelper.ClearTextButton="True" Text="{Binding Path=Url, Mode=TwoWay}"></TextBox>
                     <ComboBox Margin="10,0" Controls:TextBoxHelper.Watermark="Method" ItemsSource="{Binding Path=Methods}" SelectedValue="{Binding Path=Method}"></ComboBox>
-                    <Button Width="75" Style="{StaticResource AccentedSquareButtonStyle}" Command="{Binding Path=RequestCommand}">Request</Button>
+                    <Button Width="75" Style="{StaticResource AccentedSquareButtonStyle}" Command="{Binding Path=RequestCommand}" Name="RequestButton">Request</Button>
+                    <Controls:ProgressRing Margin="10 0 0 0" Height="10" Width="10" IsActive="True" Visibility="{Binding Path=IsLoading, Mode=TwoWay, Converter={StaticResource visibilityConverter}}" />
                 </StackPanel>
                 <StackPanel DockPanel.Dock="Top" Margin="10" Orientation="Vertical">
                     <TextBlock>Request</TextBlock>

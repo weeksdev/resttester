@@ -1,0 +1,23 @@
+﻿<Controls:MetroWindow x:Class="RestTester.HeadersWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:local="clr-namespace:RestTester"
+        mc:Ignorable="d"
+        Title="Headers" Height="300" Width="300" GlowBrush="Gray">
+    <Grid>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Orientation="Vertical">
+                <Button Width="100" Margin="10" HorizontalAlignment="Right" Command="{Binding Path=AddNewHeaderCommand}">Add New Header</Button>
+                <DataGrid ItemsSource="{Binding Path=Headers, Mode=TwoWay}" AllowDrop="True" Style="{StaticResource AzureDataGrid}" CanUserDeleteRows="True" AutoGenerateColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Key" Width="*" Binding="{Binding Key}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Value" Width="*" Binding="{Binding Value}"></DataGridTextColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Controls:MetroWindow>

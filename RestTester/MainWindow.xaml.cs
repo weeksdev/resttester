@@ -24,6 +24,7 @@ namespace RestTester
         ViewModel.MainViewModel vm;
         ThemeWindow themeWindow;
         CredentialsWindow credWindow;
+        HeadersWindow headersWindow;
         public MainWindow()
         {
             vm = new ViewModel.MainViewModel();
@@ -33,7 +34,7 @@ namespace RestTester
         protected override void OnClosed(EventArgs e)
         {
             base.OnClosed(e);
-
+            
             Application.Current.Shutdown();
         }
         private void ThemeButton_Click(object sender, RoutedEventArgs e)
@@ -54,6 +55,16 @@ namespace RestTester
             }
             credWindow = new CredentialsWindow(vm);
             credWindow.Show();
+        }
+
+        private void HeadersButton_Click(object sender, RoutedEventArgs e)
+        {
+            if(headersWindow != null)
+            {
+                headersWindow = null;
+            }
+            headersWindow = new HeadersWindow(vm);
+            headersWindow.Show();
         }
     }
 }

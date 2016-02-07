@@ -10,8 +10,11 @@
     <Grid>
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel Orientation="Vertical">
-                <Button Width="100" Margin="10" HorizontalAlignment="Right" Command="{Binding Path=AddNewHeaderCommand}">Add New Header</Button>
-                <DataGrid ItemsSource="{Binding Path=Headers, Mode=TwoWay}" AllowDrop="True" Style="{StaticResource AzureDataGrid}" CanUserDeleteRows="True" AutoGenerateColumns="False">
+                <StackPanel Orientation="Horizontal">
+                    <Button Width="100" Margin="10" HorizontalAlignment="Left" Command="{Binding Path=AddNewHeaderCommand}">Add New Header</Button>
+                    <Button Width="100" Margin="10" HorizontalAlignment="Right" Command="{Binding Path=DeleteHeaderCommand}">Delete Header</Button>
+                </StackPanel>
+                <DataGrid ItemsSource="{Binding Path=Headers, Mode=TwoWay}" SelectedItem="{Binding Path=SelectedHeader, Mode=TwoWay}" AllowDrop="True" Style="{StaticResource AzureDataGrid}" CanUserDeleteRows="True" AutoGenerateColumns="False">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Key" Width="*" Binding="{Binding Key}"></DataGridTextColumn>
                         <DataGridTextColumn Header="Value" Width="*" Binding="{Binding Value}"></DataGridTextColumn>

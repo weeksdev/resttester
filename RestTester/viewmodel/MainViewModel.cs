@@ -34,7 +34,7 @@ namespace RestTester.ViewModel
         {
             RequestCommand = new RelayCommand(Request);
             AddNewHeaderCommand = new RelayCommand(AddNewHeader);
-
+            DeleteHeaderCommand = new RelayCommand(DeleteSelectedHeader);
         }
 
         public RelayCommand RequestCommand { get; set; }
@@ -71,6 +71,21 @@ namespace RestTester.ViewModel
         {
             get { return _headers; }
             set { _headers = value; RaisePropertyChanged("Headers"); }
+        }
+        private KeyVal _selectedHeader;
+
+        public KeyVal SelectedHeader
+        {
+            get { return _selectedHeader; }
+            set { _selectedHeader = value; RaisePropertyChanged("SelectedHeader"); }
+        }
+        public RelayCommand DeleteHeaderCommand { get; set; }
+        public void DeleteSelectedHeader()
+        {
+            if(SelectedHeader != null)
+            {
+                Headers.Remove(SelectedHeader);
+            }
         }
         public RelayCommand AddNewHeaderCommand { get; set; }
         public void AddNewHeader()

@@ -290,7 +290,7 @@ namespace RestTester.ViewModel
             get { return _isLoading; }
             set { _isLoading = value; RaisePropertyChanged("IsLoading"); }
         }
-
+        public event EventHandler RequestPosted;
         public void Request()
         {
             IsLoading = true;
@@ -384,6 +384,11 @@ namespace RestTester.ViewModel
                 finally
                 {
                     IsLoading = false;
+                    var handler = RequestPosted;
+                    if(handler != null)
+                    {
+                        handler(this, EventArgs.Empty);
+                    }
                 }
             });
             requestThread.Start();

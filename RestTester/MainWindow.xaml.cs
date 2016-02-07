@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Windows;
 using MahApps.Metro.Controls;
+using System.Reflection;
+using System.Windows.Controls;
+using System.Text;
 
 namespace RestTester
 {
@@ -17,7 +20,31 @@ namespace RestTester
         {
             vm = new ViewModel.MainViewModel();
             this.DataContext = vm;
+            
+            vm.RequestPosted += new EventHandler(delegate (object o, EventArgs e)
+            {
+                this.Dispatcher.Invoke((Action)(() =>
+                {
+                    if (vm.Response != null && vm.Response != "")
+                    {
+                        HideScriptErrors(this.WebBrowserView, true);
+                        WebBrowserView.NavigateToString(vm.Response.ToString());
+                    }
+                }));
+            });
             InitializeComponent();
+        }
+        public void HideScriptErrors(WebBrowser wb, bool Hide)
+        {
+            FieldInfo fiComWebBrowser = typeof(WebBrowser)
+                .GetField("_axIWebBrowser2",
+                          BindingFlags.Instance | BindingFlags.NonPublic);
+            if (fiComWebBrowser == null) return;
+            object objComWebBrowser = fiComWebBrowser.GetValue(wb);
+            if (objComWebBrowser == null) return;
+            objComWebBrowser.GetType().InvokeMember(
+                "Silent", BindingFlags.SetProperty, null, objComWebBrowser,
+                new object[] { Hide });
         }
         protected override void OnClosed(EventArgs e)
         {

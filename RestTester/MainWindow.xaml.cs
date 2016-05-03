@@ -4,6 +4,7 @@ using MahApps.Metro.Controls;
 using System.Reflection;
 using System.Windows.Controls;
 using System.Text;
+using System.Net;
 
 namespace RestTester
 {
@@ -32,6 +33,7 @@ namespace RestTester
                     }
                 }));
             });
+            ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
             InitializeComponent();
         }
         public void HideScriptErrors(WebBrowser wb, bool Hide)

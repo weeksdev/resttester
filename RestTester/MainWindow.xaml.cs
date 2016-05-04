@@ -19,6 +19,7 @@ namespace RestTester
         HeadersWindow headersWindow;
         public MainWindow()
         {
+            themeWindow = new ThemeWindow();
             vm = new ViewModel.MainViewModel();
             this.DataContext = vm;
             
